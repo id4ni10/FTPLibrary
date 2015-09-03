@@ -1,0 +1,6 @@
+*.dll
+*.pdb
+*.sln
+FTPLibrary.v12.suo
+*.cache
+*.txt
