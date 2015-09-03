@@ -40,13 +40,13 @@ namespace DsAdmin
 
                 Request.Credentials = UserCredentials;
             }
-            catch { }
+            catch { throw; }
         }
 
         /// <summary>
         /// Cria um diretório relativo ao host.
         /// </summary>
-        /// <param name="path">Diretório relativo ao Host. \nex: /testes/files, /arquivos</param>
+        /// <param name="ftpfullpath">Diretório relativo ao Host. \nex: ftp://testes/files, ftp://arquivos/ </param>
         /// <returns>Retorna 'true' para sucesso.</returns>
         public bool CreateDirectory(String ftpfullpath)
         {
@@ -71,6 +71,10 @@ namespace DsAdmin
 
                 throw new FtpExeption(ex, "Erro ao criar diretório no caminho: " + FtpFullPath);
             }
+            catch (Exception e)
+            {
+                throw new FtpExeption(e, "Erro ao realizar a operação desejada.");
+            }
             finally
             {
                 FtpStream.Close();
@@ -80,6 +84,11 @@ namespace DsAdmin
             return true;
         }
 
+        /// <summary>
+        /// Baixa um arquivo do host destino.
+        /// </summary>
+        /// <param name="ftpfullpath">Diretório relativo ao Host. \nex: ftp://testes/files/file.txt, ftp://arquivos/other.pdf </param>
+        /// <returns>Retorna 'true' para sucesso.</returns>
         public byte[] DownloadFile(String ftpfullpath)
         {
             try
@@ -106,6 +115,10 @@ namespace DsAdmin
 
                 throw new FtpExeption(ex, "Erro ao baixar arquivo no caminho: " + FtpFullPath);
             }
+            catch (Exception e)
+            {
+                throw new FtpExeption(e, "Erro ao realizar a operação desejada.");
+            }
         }
 
         private MemoryStream BuildFile(Stream stream)
@@ -127,7 +140,12 @@ namespace DsAdmin
             return file;
         }
 
-
+        /// <summary>
+        /// Envia um arquivo 
+        /// </summary>
+        /// <param name="ftpfullpath">Diretório relativo ao Host. \nex: ftp://testes/files/file.txt, ftp://arquivos/other.pdf </param>
+        /// <param name="file">Arquivo a ser enviado.</param>
+        /// <returns>Retorna 'true' para sucesso.</returns>
         public bool UploadFile(String ftpfullpath, Byte[] file)
         {
             try
@@ -152,8 +170,17 @@ namespace DsAdmin
 
                 throw new FtpExeption(ex, "Erro ao enviar o arquivo no caminho: " + FtpFullPath);
             }
+            catch (Exception e)
+            {
+                throw new FtpExeption(e, "Erro ao realizar a operação desejada.");
+            }
         }
 
+        /// <summary>
+        /// Apaga o arquivo desejado no servidor.
+        /// </summary>
+        /// <param name="ftpfullpath">Diretório relativo ao Host. \nex: ftp://testes/files/file.txt, ftp://arquivos/other.pdf </param>
+        /// <returns>Retorna 'true' para sucesso.</returns>
         public bool DeleteFile(String ftpfullpath)
         {
             try
@@ -177,7 +204,10 @@ namespace DsAdmin
 
                 throw new FtpExeption(ex, "Erro ao apagar o arquivo no caminho: " + FtpFullPath);
             }
+            catch (Exception e)
+            {
+                throw new FtpExeption(e, "Erro ao realizar a operação desejada.");
+            }
         }
-
     }
 }
