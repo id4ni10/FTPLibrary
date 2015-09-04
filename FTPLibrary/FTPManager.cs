@@ -3,7 +3,7 @@ using System.IO;
 using System.Net;
 using FTPLibrary.Exceptions;
 
-namespace DsAdmin
+namespace FTPLibrary
 {
     public class Ftp
     {
