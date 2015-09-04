@@ -7,7 +7,7 @@ namespace FTPLibrary
 {
     public class Ftp
     {
-        public string FtpFullPath { get; set; }
+        private string FtpFullPath { get; set; }
 
         private FtpWebRequest Request { get; set; }
 
@@ -20,9 +20,8 @@ namespace FTPLibrary
         /// <summary>
         /// Construtor do objeto Ftp.
         /// </summary>
-        /// <param name="host">Host destino \nex: ftphost.com.br, ftphomologacao.com.br...</param>
-        /// <param name="user">Nome do usuário</param>
-        /// <param name="pass">Senha do usuário</param>
+        /// <param name="user">Nome do usuario</param>
+        /// <param name="pass">Senha do usuario</param>
         public Ftp(string user, string pass)
         {
             UserCredentials = new NetworkCredential(user, pass);
@@ -44,10 +43,10 @@ namespace FTPLibrary
         }
 
         /// <summary>
-        /// Cria um diretório relativo ao host.
+        /// Cria um diretorio relativo ao host.
         /// </summary>
-        /// <param name="ftpfullpath">Diretório relativo ao Host. \nex: ftp://testes/files, ftp://arquivos/ </param>
-        /// <returns>Retorna 'true' para sucesso.</returns>
+        /// <param name="ftpfullpath">Diretorio relativo ao Host. \nex: ftp://testes/files, ftp://arquivos/</param>
+        /// <returns>Retorna true para sucesso.</returns>
         public bool CreateDirectory(String ftpfullpath)
         {
             try
@@ -87,8 +86,8 @@ namespace FTPLibrary
         /// <summary>
         /// Baixa um arquivo do host destino.
         /// </summary>
-        /// <param name="ftpfullpath">Diretório relativo ao Host. \nex: ftp://testes/files/file.txt, ftp://arquivos/other.pdf </param>
-        /// <returns>Retorna 'true' para sucesso.</returns>
+        /// <param name="ftpfullpath">Diretorio relativo ao Host. \nex: ftp://testes/files/file.txt, ftp://arquivos/other.pdf</param>
+        /// <returns>Retorna true para sucesso.</returns>
         public byte[] DownloadFile(String ftpfullpath)
         {
             try
@@ -121,6 +120,11 @@ namespace FTPLibrary
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="stream">Stream contendo o arquivo.</param>
+        /// <returns>Arquivo em um MemoryStream</returns>
         private MemoryStream BuildFile(Stream stream)
         {
             MemoryStream file = new MemoryStream();
@@ -143,9 +147,9 @@ namespace FTPLibrary
         /// <summary>
         /// Envia um arquivo 
         /// </summary>
-        /// <param name="ftpfullpath">Diretório relativo ao Host. \nex: ftp://testes/files/file.txt, ftp://arquivos/other.pdf </param>
+        /// <param name="ftpfullpath">Diretorio relativo ao Host. \nex: ftp://testes/files/file.txt, ftp://arquivos/other.pdf</param>
         /// <param name="file">Arquivo a ser enviado.</param>
-        /// <returns>Retorna 'true' para sucesso.</returns>
+        /// <returns>Retorna true para sucesso.</returns>
         public bool UploadFile(String ftpfullpath, Byte[] file)
         {
             try
@@ -179,8 +183,8 @@ namespace FTPLibrary
         /// <summary>
         /// Apaga o arquivo desejado no servidor.
         /// </summary>
-        /// <param name="ftpfullpath">Diretório relativo ao Host. \nex: ftp://testes/files/file.txt, ftp://arquivos/other.pdf </param>
-        /// <returns>Retorna 'true' para sucesso.</returns>
+        /// <param name="ftpfullpath">Diretorio relativo ao Host. \nex: ftp://testes/files/file.txt, ftp://arquivos/other.pdf</param>
+        /// <returns>Retorna true para sucesso.</returns>
         public bool DeleteFile(String ftpfullpath)
         {
             try
