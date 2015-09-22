@@ -37,6 +37,8 @@ namespace FTPLibrary
 
                 Request = (FtpWebRequest)WebRequest.Create(ftpfullpath);
 
+                Request.Method = method;
+
                 Request.Credentials = UserCredentials;
             }
             catch { throw; }
@@ -45,7 +47,7 @@ namespace FTPLibrary
         /// <summary>
         /// Cria um diretorio relativo ao host.
         /// </summary>
-        /// <param name="ftpfullpath">Diretorio relativo ao Host. \nex: ftp://testes/files, ftp://arquivos/</param>
+        /// <param name="ftpfullpath">Diretorio relativo ao Host. ex: ftp://testes/files, ftp://arquivos/</param>
         /// <returns>Retorna true para sucesso.</returns>
         public bool CreateDirectory(String ftpfullpath)
         {
@@ -60,7 +62,8 @@ namespace FTPLibrary
                 Response = (FtpWebResponse)Request.GetResponse();
 
                 FtpStream = Response.GetResponseStream();
-
+                Response.Close();
+                FtpStream.Close();
             }
             catch (WebException ex)
             {
@@ -74,11 +77,6 @@ namespace FTPLibrary
             {
                 throw new FtpExeption(e, "Erro ao realizar a operação desejada.");
             }
-            finally
-            {
-                FtpStream.Close();
-                Response.Close();
-            }
 
             return true;
         }
@@ -86,7 +84,7 @@ namespace FTPLibrary
         /// <summary>
         /// Baixa um arquivo do host destino.
         /// </summary>
-        /// <param name="ftpfullpath">Diretorio relativo ao Host. \nex: ftp://testes/files/file.txt, ftp://arquivos/other.pdf</param>
+        /// <param name="ftpfullpath">Diretorio relativo ao Host. ex: ftp://testes/files/file.txt, ftp://arquivos/other.pdf</param>
         /// <returns>Retorna true para sucesso.</returns>
         public byte[] DownloadFile(String ftpfullpath)
         {
@@ -145,9 +143,9 @@ namespace FTPLibrary
         }
 
         /// <summary>
-        /// Envia um arquivo 
+        /// Envia um arquivo
         /// </summary>
-        /// <param name="ftpfullpath">Diretorio relativo ao Host. \nex: ftp://testes/files/file.txt, ftp://arquivos/other.pdf</param>
+        /// <param name="ftpfullpath">Diretorio relativo ao Host. ex: ftp://testes/files/file.txt, ftp://arquivos/other.pdf</param>
         /// <param name="file">Arquivo a ser enviado.</param>
         /// <returns>Retorna true para sucesso.</returns>
         public bool UploadFile(String ftpfullpath, Byte[] file)
@@ -181,9 +179,49 @@ namespace FTPLibrary
         }
 
         /// <summary>
+        /// Envia um arquivo 
+        /// </summary>
+        /// <param name="ftpfullpath">Diretorio relativo ao Host. ex: ftp://testes/files/file.txt, ftp://arquivos/other.pdf</param>
+        /// <param name="file">Arquivo a ser enviado.</param>
+        /// <returns>Retorna true para sucesso.</returns>
+        public bool UploadFile(string ftpfullpath, Stream stream)
+        {
+            try
+            {
+                SetupRequest(ftpfullpath, WebRequestMethods.Ftp.UploadFile);
+
+                Request.ContentLength = stream.Length;
+
+                FtpStream = Request.GetRequestStream();
+
+                MemoryStream ms = new MemoryStream();
+
+                stream.CopyTo(ms);
+
+                FtpStream.Write(ms.ToArray(), 0, Convert.ToInt32(ms.Length));
+
+                FtpStream.Close();
+
+                return true;
+            }
+            catch (WebException ex)
+            {
+                Response = (FtpWebResponse)ex.Response;
+
+                Response.Close();
+
+                throw new FtpExeption(ex, "Erro ao enviar o arquivo no caminho: " + FtpFullPath);
+            }
+            catch (Exception e)
+            {
+                throw new FtpExeption(e, "Erro ao realizar a operação desejada.");
+            }
+        }
+
+        /// <summary>
         /// Apaga o arquivo desejado no servidor.
         /// </summary>
-        /// <param name="ftpfullpath">Diretorio relativo ao Host. \nex: ftp://testes/files/file.txt, ftp://arquivos/other.pdf</param>
+        /// <param name="ftpfullpath">Diretorio relativo ao Host. ex: ftp://testes/files/file.txt, ftp://arquivos/other.pdf</param>
         /// <returns>Retorna true para sucesso.</returns>
         public bool DeleteFile(String ftpfullpath)
         {
