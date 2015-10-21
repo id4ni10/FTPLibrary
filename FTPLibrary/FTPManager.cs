@@ -69,6 +69,12 @@ namespace FTPLibrary
             {
                 Response = (FtpWebResponse)ex.Response;
 
+                if (Response.StatusCode == FtpStatusCode.ActionNotTakenFileUnavailable)
+                {
+                    Response.Close();
+                    return true;
+                }
+                
                 Response.Close();
 
                 throw new FtpExeption(ex, "Erro ao criar diretório no caminho: " + FtpFullPath);
