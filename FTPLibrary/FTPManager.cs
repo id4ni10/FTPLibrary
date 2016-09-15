@@ -5,9 +5,11 @@ using FTPLibrary.Exceptions;
 
 namespace FTPLibrary
 {
-    public class Ftp
+    public class Ftp : IDisposable
     {
-        private string FtpFullPath { get; set; }
+        public string Host { get; set; }
+
+        public Uri Uri { get;  private set; }
 
         private FtpWebRequest Request { get; set; }
 
@@ -20,22 +22,32 @@ namespace FTPLibrary
         /// <summary>
         /// Construtor do objeto Ftp.
         /// </summary>
+        /// <param name="host">Nome do usuario</param>
         /// <param name="user">Nome do usuario</param>
         /// <param name="pass">Senha do usuario</param>
-        public Ftp(string user, string pass)
+        public Ftp(string host, string user, string pass)
         {
+            Host = host;
             UserCredentials = new NetworkCredential(user, pass);
         }
 
         private Ftp() { }
 
-        private void SetupRequest(String ftpfullpath, String method)
+        private void SetupRequest(string path, string method)
         {
             try
             {
-                FtpFullPath = ftpfullpath;
+                Uri uri;
 
-                Request = (FtpWebRequest)WebRequest.Create(ftpfullpath);
+                var success = Uri
+                    .TryCreate(Host + (string.IsNullOrWhiteSpace(path) ? "" : path), UriKind.RelativeOrAbsolute, out uri);
+
+                if (!success)
+                    throw new UriFormatException(uri.AbsoluteUri);
+
+                Uri = uri;
+
+                Request = (FtpWebRequest)WebRequest.Create(uri);
 
                 Request.Method = method;
 
@@ -47,13 +59,13 @@ namespace FTPLibrary
         /// <summary>
         /// Cria um diretorio relativo ao host.
         /// </summary>
-        /// <param name="ftpfullpath">Diretorio relativo ao Host. ex: ftp://testes/files, ftp://arquivos/</param>
+        /// <param name="path">Diretorio relativo ao Host. ex: /files, /arquivos/</param>
         /// <returns>Retorna true para sucesso.</returns>
-        public bool CreateDirectory(String ftpfullpath)
+        public bool CreateDirectory(string path = null)
         {
             try
             {
-                SetupRequest(ftpfullpath, WebRequestMethods.Ftp.MakeDirectory);
+                SetupRequest(path, WebRequestMethods.Ftp.MakeDirectory);
 
                 Request.UsePassive = true;
                 Request.UseBinary = true;
@@ -74,10 +86,10 @@ namespace FTPLibrary
                     Response.Close();
                     return true;
                 }
-                
+
                 Response.Close();
 
-                throw new FtpExeption(ex, "Erro ao criar diretório no caminho: " + FtpFullPath);
+                throw new FtpExeption(ex, "Erro ao criar diretório no caminho: " + Uri.AbsoluteUri);
             }
             catch (Exception e)
             {
@@ -90,13 +102,13 @@ namespace FTPLibrary
         /// <summary>
         /// Baixa um arquivo do host destino.
         /// </summary>
-        /// <param name="ftpfullpath">Diretorio relativo ao Host. ex: ftp://testes/files/file.txt, ftp://arquivos/other.pdf</param>
+        /// <param name="filename">Arquivo relativo ao Host. ex: file.txt, arquivos/other.pdf</param>
         /// <returns>Retorna true para sucesso.</returns>
-        public byte[] DownloadFile(String ftpfullpath)
+        public byte[] DownloadFile(String filename)
         {
             try
             {
-                SetupRequest(ftpfullpath, WebRequestMethods.Ftp.DownloadFile);
+                SetupRequest(filename, WebRequestMethods.Ftp.DownloadFile);
 
                 Response = (FtpWebResponse)Request.GetResponse();
 
@@ -116,7 +128,7 @@ namespace FTPLibrary
 
                 Response.Close();
 
-                throw new FtpExeption(ex, "Erro ao baixar arquivo no caminho: " + FtpFullPath);
+                throw new FtpExeption(ex, "Erro ao baixar arquivo no caminho: " + Uri.AbsoluteUri);
             }
             catch (Exception e)
             {
@@ -151,15 +163,17 @@ namespace FTPLibrary
         /// <summary>
         /// Envia um arquivo
         /// </summary>
-        /// <param name="ftpfullpath">Diretorio relativo ao Host. ex: ftp://testes/files/file.txt, ftp://arquivos/other.pdf</param>
+        /// <param name="path">Diretorio relativo ao Host. ex: /testes/files/file.txt, /arquivos/other.pdf</param>
         /// <param name="file">Arquivo a ser enviado.</param>
         /// <returns>Retorna true para sucesso.</returns>
-        public bool UploadFile(String ftpfullpath, Byte[] file)
+        public bool UploadFile(String path, Byte[] file)
         {
             try
             {
-                SetupRequest(ftpfullpath, WebRequestMethods.Ftp.UploadFile);
-
+                SetupRequest(path, WebRequestMethods.Ftp.UploadFile);
+                
+                Request.UseBinary = true;
+                
                 Request.ContentLength = file.Length;
 
                 FtpStream = Request.GetRequestStream();
@@ -176,7 +190,7 @@ namespace FTPLibrary
 
                 Response.Close();
 
-                throw new FtpExeption(ex, "Erro ao enviar o arquivo no caminho: " + FtpFullPath);
+                throw new FtpExeption(ex, "Erro ao enviar o arquivo no caminho: " + Uri.AbsoluteUri);
             }
             catch (Exception e)
             {
@@ -187,14 +201,16 @@ namespace FTPLibrary
         /// <summary>
         /// Envia um arquivo 
         /// </summary>
-        /// <param name="ftpfullpath">Diretorio relativo ao Host. ex: ftp://testes/files/file.txt, ftp://arquivos/other.pdf</param>
+        /// <param name="path">Diretorio relativo ao Host. ex: /testes/files/file.txt, /arquivos/other.pdf</param>
         /// <param name="file">Arquivo a ser enviado.</param>
         /// <returns>Retorna true para sucesso.</returns>
-        public bool UploadFile(string ftpfullpath, Stream stream)
+        public bool UploadFile(string path, Stream stream)
         {
             try
             {
-                SetupRequest(ftpfullpath, WebRequestMethods.Ftp.UploadFile);
+                SetupRequest(path, WebRequestMethods.Ftp.UploadFile);
+
+                Request.UseBinary = true;
 
                 Request.ContentLength = stream.Length;
 
@@ -216,7 +232,7 @@ namespace FTPLibrary
 
                 Response.Close();
 
-                throw new FtpExeption(ex, "Erro ao enviar o arquivo no caminho: " + FtpFullPath);
+                throw new FtpExeption(ex, "Erro ao enviar o arquivo no caminho: " + Uri.AbsoluteUri);
             }
             catch (Exception e)
             {
@@ -227,13 +243,13 @@ namespace FTPLibrary
         /// <summary>
         /// Apaga o arquivo desejado no servidor.
         /// </summary>
-        /// <param name="ftpfullpath">Diretorio relativo ao Host. ex: ftp://testes/files/file.txt, ftp://arquivos/other.pdf</param>
+        /// <param name="path">Diretorio relativo ao Host. ex: /testes/files/file.txt, /arquivos/other.pdf</param>
         /// <returns>Retorna true para sucesso.</returns>
-        public bool DeleteFile(String ftpfullpath)
+        public bool DeleteFile(String path)
         {
             try
             {
-                SetupRequest(ftpfullpath, WebRequestMethods.Ftp.DeleteFile);
+                SetupRequest(path, WebRequestMethods.Ftp.DeleteFile);
 
                 Request.UseBinary = true;
                 Request.UsePassive = true;
@@ -250,12 +266,17 @@ namespace FTPLibrary
 
                 Response.Close();
 
-                throw new FtpExeption(ex, "Erro ao apagar o arquivo no caminho: " + FtpFullPath);
+                throw new FtpExeption(ex, "Erro ao apagar o arquivo no caminho: " + Uri.AbsoluteUri);
             }
             catch (Exception e)
             {
                 throw new FtpExeption(e, "Erro ao realizar a operação desejada.");
             }
+        }
+
+        public void Dispose()
+        {
+            GC.SuppressFinalize(this);
         }
     }
 }
