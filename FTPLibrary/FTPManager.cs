@@ -9,7 +9,7 @@ namespace FTPLibrary
     {
         public string Host { get; set; }
 
-        public Uri Uri { get;  private set; }
+        public Uri Uri { get; private set; }
 
         private FtpWebRequest Request { get; set; }
 
@@ -33,14 +33,15 @@ namespace FTPLibrary
 
         private Ftp() { }
 
-        private void SetupRequest(string path, string method)
+        ~Ftp() { this.Dispose(); }
+
+        private void SetupRequest(string path, string method, long offset = 0)
         {
             try
             {
                 Uri uri;
 
-                var success = Uri
-                    .TryCreate(Host + (string.IsNullOrWhiteSpace(path) ? "" : path), UriKind.RelativeOrAbsolute, out uri);
+                var success = Uri.TryCreate(Host + (string.IsNullOrWhiteSpace(path) ? "" : path), UriKind.RelativeOrAbsolute, out uri);
 
                 if (!success)
                     throw new UriFormatException(uri.AbsoluteUri);
@@ -48,6 +49,9 @@ namespace FTPLibrary
                 Uri = uri;
 
                 Request = (FtpWebRequest)WebRequest.Create(uri);
+
+                if (offset > 0)
+                    Request.ContentOffset = offset;
 
                 Request.Method = method;
 
@@ -103,12 +107,14 @@ namespace FTPLibrary
         /// Baixa um arquivo do host destino.
         /// </summary>
         /// <param name="filename">Arquivo relativo ao Host. ex: file.txt, arquivos/other.pdf</param>
-        /// <returns>Retorna true para sucesso.</returns>
-        public byte[] DownloadFile(String filename)
+        /// <param name="offset">Marca de início (byte), para a leitura do arquivo no servidor.</param>
+        /// <exception cref="FtpExeption"></exception>
+        /// <returns>Retorna o arquivo desejado.</returns>
+        public byte[] DownloadFile(String filename, long offset = 0)
         {
             try
             {
-                SetupRequest(filename, WebRequestMethods.Ftp.DownloadFile);
+                SetupRequest(filename, WebRequestMethods.Ftp.DownloadFile, offset);
 
                 Response = (FtpWebResponse)Request.GetResponse();
 
@@ -137,9 +143,10 @@ namespace FTPLibrary
         }
 
         /// <summary>
-        /// 
+        /// Constroi um arquivo a partir de um stream.
         /// </summary>
         /// <param name="stream">Stream contendo o arquivo.</param>
+        /// <exception cref="FtpExeption"></exception>
         /// <returns>Arquivo em um MemoryStream</returns>
         private MemoryStream BuildFile(Stream stream)
         {
@@ -165,15 +172,16 @@ namespace FTPLibrary
         /// </summary>
         /// <param name="path">Diretorio relativo ao Host. ex: /testes/files/file.txt, /arquivos/other.pdf</param>
         /// <param name="file">Arquivo a ser enviado.</param>
+        /// <exception cref="FtpExeption"></exception>
         /// <returns>Retorna true para sucesso.</returns>
-        public bool UploadFile(String path, Byte[] file)
+        public bool UploadFile(string path, byte[] file, long offset = 0)
         {
             try
             {
-                SetupRequest(path, WebRequestMethods.Ftp.UploadFile);
-                
+                SetupRequest(path, WebRequestMethods.Ftp.UploadFile, offset);
+
                 Request.UseBinary = true;
-                
+
                 Request.ContentLength = file.Length;
 
                 FtpStream = Request.GetRequestStream();
@@ -203,12 +211,13 @@ namespace FTPLibrary
         /// </summary>
         /// <param name="path">Diretorio relativo ao Host. ex: /testes/files/file.txt, /arquivos/other.pdf</param>
         /// <param name="file">Arquivo a ser enviado.</param>
+        /// <exception cref="FtpExeption"></exception>
         /// <returns>Retorna true para sucesso.</returns>
-        public bool UploadFile(string path, Stream stream)
+        public bool UploadFile(string path, Stream stream, long offset = 0)
         {
             try
             {
-                SetupRequest(path, WebRequestMethods.Ftp.UploadFile);
+                SetupRequest(path, WebRequestMethods.Ftp.UploadFile, offset);
 
                 Request.UseBinary = true;
 
@@ -244,6 +253,7 @@ namespace FTPLibrary
         /// Apaga o arquivo desejado no servidor.
         /// </summary>
         /// <param name="path">Diretorio relativo ao Host. ex: /testes/files/file.txt, /arquivos/other.pdf</param>
+        /// <exception cref="FtpExeption"></exception>
         /// <returns>Retorna true para sucesso.</returns>
         public bool DeleteFile(String path)
         {
@@ -258,6 +268,17 @@ namespace FTPLibrary
                 Response = (FtpWebResponse)Request.GetResponse();
 
                 Response.Close();
+
+                if (Response.StatusCode.Equals(
+                    FtpStatusCode.ActionAbortedLocalProcessingError |
+                    FtpStatusCode.ActionAbortedUnknownPageType |
+                    FtpStatusCode.ActionNotTakenFilenameNotAllowed |
+                    FtpStatusCode.ActionNotTakenFileUnavailable |
+                    FtpStatusCode.ActionNotTakenFilenameNotAllowed |
+                    FtpStatusCode.ActionNotTakenFileUnavailableOrBusy |
+                    FtpStatusCode.ActionNotTakenInsufficientSpace))
+                    return false;
+
                 return true;
             }
             catch (WebException ex)
@@ -271,6 +292,37 @@ namespace FTPLibrary
             catch (Exception e)
             {
                 throw new FtpExeption(e, "Erro ao realizar a operação desejada.");
+            }
+        }
+
+        public long GetFileSize(string filename)
+        {
+            try
+            {
+                SetupRequest(filename, WebRequestMethods.Ftp.GetFileSize);
+
+                Response = (FtpWebResponse)Request.GetResponse();
+
+                var size = Response.ContentLength;
+
+                Response.Close();
+
+                return size;
+            }
+            catch (WebException ex)
+            {
+                Response = (FtpWebResponse)ex.Response;
+
+                Response.Close();
+
+                if (Response.StatusCode == FtpStatusCode.ActionNotTakenFileUnavailable)
+                    return 0;
+
+                throw new FtpExeption(ex, "Não foi possível encontrar o arquivo no caminho: " + Uri.AbsoluteUri);
+            }
+            catch(Exception e)
+            {
+                throw e;
             }
         }
 

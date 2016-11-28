@@ -13,6 +13,5 @@ namespace FTPLibrary.Exceptions
         {
             this.origin = origin;
         }
-
     }
 }
