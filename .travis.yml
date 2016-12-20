@@ -1,0 +1,4 @@
+language: csharp
+solution: FTPLibrary/FTPLibrary/FTPLibrary.csproj
+script:
+  - xbuild /p:Configuration=Release FTPLibrary/FTPLibrary/FTPLibrary.csproj
