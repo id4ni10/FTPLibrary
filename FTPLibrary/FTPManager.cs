@@ -57,7 +57,10 @@ namespace FTPLibrary
 
                 Request.Credentials = UserCredentials;
             }
-            catch { throw; }
+            catch
+            {
+                throw;
+            }
         }
 
         /// <summary>
@@ -78,20 +81,19 @@ namespace FTPLibrary
                 Response = (FtpWebResponse)Request.GetResponse();
 
                 FtpStream = Response.GetResponseStream();
+
                 Response.Close();
+
                 FtpStream.Close();
             }
             catch (WebException ex)
             {
                 Response = (FtpWebResponse)ex.Response;
 
-                if (Response.StatusCode == FtpStatusCode.ActionNotTakenFileUnavailable)
-                {
-                    Response.Close();
-                    return true;
-                }
-
                 Response.Close();
+
+                if (Response.StatusCode == FtpStatusCode.ActionNotTakenFileUnavailable)
+                    return true;
 
                 throw new FtpExeption(ex, "Erro ao criar diretório no caminho: " + Uri.AbsoluteUri);
             }
@@ -123,7 +125,9 @@ namespace FTPLibrary
                 var file = BuildFile(FtpStream);
 
                 file.Close();
+
                 FtpStream.Close();
+
                 Response.Close();
 
                 return file.ToArray();
@@ -150,21 +154,26 @@ namespace FTPLibrary
         /// <returns>Arquivo em um MemoryStream</returns>
         private MemoryStream BuildFile(Stream stream)
         {
-            MemoryStream file = new MemoryStream();
             try
             {
-                byte[] buffer = new byte[2048];
-                int readCount = stream.Read(buffer, 0, buffer.Length);
+                var file = new MemoryStream();
+
+                var buffer = new byte[2048];
+
+                var readCount = stream.Read(buffer, 0, buffer.Length);
 
                 while (readCount > 0)
                 {
                     file.Write(buffer, 0, readCount);
                     readCount = stream.Read(buffer, 0, buffer.Length);
                 }
-            }
-            catch { throw; }
 
-            return file;
+                return file;
+            }
+            catch
+            {
+                throw;
+            }
         }
 
         /// <summary>
@@ -225,7 +234,7 @@ namespace FTPLibrary
 
                 FtpStream = Request.GetRequestStream();
 
-                MemoryStream ms = new MemoryStream();
+                var ms = new MemoryStream();
 
                 stream.CopyTo(ms);
 
@@ -242,6 +251,10 @@ namespace FTPLibrary
                 Response.Close();
 
                 throw new FtpExeption(ex, "Erro ao enviar o arquivo no caminho: " + Uri.AbsoluteUri);
+            }
+            catch (OverflowException exp)
+            {
+                throw new FtpStreamOverflowException(exp);
             }
             catch (Exception e)
             {
@@ -320,7 +333,7 @@ namespace FTPLibrary
 
                 throw new FtpExeption(ex, "Não foi possível encontrar o arquivo no caminho: " + Uri.AbsoluteUri);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw e;
             }
