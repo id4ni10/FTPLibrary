@@ -1,8 +1,9 @@
 *.dll
 *.pdb
-*.sln
 FTPLibrary.v12.suo
 *.cache
 *.txt
-FTPLibrary/obj/Debug/TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs
+FTPLibrary/obj/
 FTPLibrary/FTPLibrary.csproj.vspscc
+FTPLibrary/bin/
+.vs/
