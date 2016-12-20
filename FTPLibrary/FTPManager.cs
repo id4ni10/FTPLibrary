@@ -22,7 +22,7 @@ namespace FTPLibrary
         /// <summary>
         /// Construtor do objeto Ftp.
         /// </summary>
-        /// <param name="host">Nome do usuario</param>
+        /// <param name="host">Nome do host</param>
         /// <param name="user">Nome do usuario</param>
         /// <param name="pass">Senha do usuario</param>
         public Ftp(string host, string user, string pass)
@@ -216,7 +216,7 @@ namespace FTPLibrary
         }
 
         /// <summary>
-        /// Envia um arquivo 
+        /// Envia um arquivo
         /// </summary>
         /// <param name="path">Diretorio relativo ao Host. ex: /testes/files/file.txt, /arquivos/other.pdf</param>
         /// <param name="file">Arquivo a ser enviado.</param>
