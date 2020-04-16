@@ -27,9 +27,9 @@ jobs:
       uses: microsoft/setup-msbuild@v1.0.0
 
     - name: build
-      run: msbuild FTPLibrary.sln /t:restore /property:Configuration=Release
+      run: msbuild FTPLibrary.sln /t:pack /property:Configuration=Release
 
     - uses: actions/upload-artifact@v1
       with:
         name: nuget
-        path: ${{ github.workspace }}\FTPLibrary\bin\Release
+        path: ${{ github.workspace }}\bin\Release
