@@ -29,10 +29,8 @@ jobs:
     - name: build
       working-directory: src
       run: |
-        md \package
-        msbuild FTPLibrary.sln /p:OutputPath=\package
+        msbuild FTPLibrary.sln
 
     - uses: actions/upload-artifact@v1
       with:
-        name: nuget
-        path: \package
+        name: nuget        
