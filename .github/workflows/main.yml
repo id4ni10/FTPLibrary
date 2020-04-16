@@ -27,7 +27,7 @@ jobs:
       uses: microsoft/setup-msbuild@v1.0.0
 
     - name: build
-      run: msbuild FTPLibrary.csproj
+      run: msbuild ${{ github.workspace }}\FTPLibrary.csproj
 
     - uses: actions/upload-artifact@v1
       with:
