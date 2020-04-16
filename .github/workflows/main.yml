@@ -29,8 +29,8 @@ jobs:
     - name: build
       working-directory: src
       run: |
-        mkdir ${{ github.workspace }}\package
-        msbuild FTPLibrary.sln /p:OutputPath=${{ github.workspace }}\package
+        mkdir package
+        msbuild FTPLibrary.sln /p:OutputPath=package
 
     - uses: actions/upload-artifact@v1
       with:
