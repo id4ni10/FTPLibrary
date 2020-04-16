@@ -29,10 +29,10 @@ jobs:
     - name: build
       working-directory: src
       run: |
-        mkdir package
-        msbuild FTPLibrary.sln /p:OutputPath=package
+        md \package
+        msbuild FTPLibrary.sln /p:OutputPath=\package
 
     - uses: actions/upload-artifact@v1
       with:
         name: nuget
-        path: ${{ github.workspace }}\package
+        path: \package
