@@ -29,7 +29,7 @@ jobs:
     - name: build
       working-directory: src
       run: |
-        echo msbuild -version
+        echo msbuild.exe -version
         msbuild.exe FTPLibrary.csproj
 
     - uses: actions/upload-artifact@v1
