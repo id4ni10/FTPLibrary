@@ -46,11 +46,10 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  <PropertyGroup>
+  <PackageId>FTPLibrary</PackageId>
+    <Version>1.0.0.0</Version>
+    <Authors>id4ni10</Authors>
+    <Company></Company>
+  </PropertyGroup>
 </Project>
