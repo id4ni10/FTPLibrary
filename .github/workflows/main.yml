@@ -29,9 +29,8 @@ jobs:
     - name: build
       working-directory: src
       run: |
-        echo path
-        echo %MSBuild\**\Bin\MSBuild.exe% -version
-        MSBuild\**\Bin\MSBuild.exe FTPLibrary.csproj
+        echo C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\MSBuild.exe -version
+        C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\MSBuild.exe FTPLibrary.csproj
 
     - uses: actions/upload-artifact@v1
       with:
