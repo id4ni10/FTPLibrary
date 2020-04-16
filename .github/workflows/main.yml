@@ -27,8 +27,9 @@ jobs:
       uses: microsoft/setup-msbuild@v1.0.0
 
     - name: build
-      run: msbuild FTPLibrary.sln
+      run: msbuild FTPLibrary.sln /property:Configuration=Release
 
     - uses: actions/upload-artifact@v1
       with:
-        name: nuget        
+        name: nuget
+        path: /bin/Release
