@@ -32,4 +32,4 @@ jobs:
     - uses: actions/upload-artifact@v1
       with:
         name: nuget
-        path: ${{ github.workspace }}\bin\Release
+        path: ${{ github.workspace }}\FTPLibrary\bin\Release
