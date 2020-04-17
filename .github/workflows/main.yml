@@ -44,6 +44,5 @@ jobs:
     
     - name: publish package
       run: |
-        nuget setapikey ${{ secrets.nuget }} -source https://api.nuget.org/v3/index.json
-        run: nuget sources Add -Name "github" -Source https://api.nuget.org/v3/index.json -UserName id4ni10 -Password ${{ secrets.nuget }}
-        nuget push ${{ github.workspace }}\package\*.nupkg -source "github" -SkipDuplicate
+        nuget push ${{ github.workspace }}\package\*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+      
