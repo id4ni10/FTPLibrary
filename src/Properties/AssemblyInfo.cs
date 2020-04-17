@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Resources;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -6,9 +7,9 @@ using System.Runtime.InteropServices;
 // conjunto de atributos. Altere o valor destes atributos para modificar a informação
 // associada a um assembly.
 [assembly: AssemblyTitle("FTPLibrary")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Biblioteca para manipulação do protocolo FTP")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("id4ni10")]
 [assembly: AssemblyProduct("FTPLibrary")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
@@ -34,3 +35,4 @@ using System.Runtime.InteropServices;
 // [assembly: AssemblyVersion("1.0.*")]
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: NeutralResourcesLanguage("pt-BR")]
