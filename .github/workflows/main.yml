@@ -29,7 +29,7 @@ jobs:
     - uses: nuget/setup-nuget@v1
       with:
         nuget-api-key: ${{ secrets.nuget }}
-        nuget-version: 'lastest'
+        nuget-version: 'latest'
 
     - name: build
       run: msbuild FTPLibrary.sln /property:Configuration=Release
