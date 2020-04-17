@@ -35,7 +35,7 @@ jobs:
       run: msbuild FTPLibrary.sln /property:Configuration=Release
     
     - name: pack
-      run: nuget pack FTPLibrary.csproj -Prop Configuration=Release -Verbosity detailed
+      run: nuget pack src/FTPLibrary.csproj -Prop Configuration=Release -Verbosity detailed
 
     - uses: actions/upload-artifact@v1
       with:
