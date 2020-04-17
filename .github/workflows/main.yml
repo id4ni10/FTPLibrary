@@ -26,8 +26,16 @@ jobs:
     - name: add msbuild
       uses: microsoft/setup-msbuild@v1.0.0
 
+    - uses: nuget/setup-nuget@v1
+      with:
+        nuget-api-key: ${{ secrets.nuget }}
+        nuget-version: 'lastest'
+
     - name: build
-      run: msbuild FTPLibrary.sln Pack /property:Configuration=Release
+      run: msbuild FTPLibrary.sln /property:Configuration=Release
+    
+    - name: restore
+      run: nuget restore FTPLibrary.sln 
 
     - uses: actions/upload-artifact@v1
       with:
