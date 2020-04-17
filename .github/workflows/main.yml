@@ -44,5 +44,5 @@ jobs:
     
     - name: publish package
       run: |
-        nuget push ${{ github.workspace }}\package\*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json
+        nuget push ${{ github.workspace }}\package\*.nupkg ${{ secrets.NUGET_API_KEY }} -source https://api.nuget.org/v3/index.json
       
