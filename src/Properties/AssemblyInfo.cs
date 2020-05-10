@@ -1,13 +1,12 @@
 ﻿using System.Resources;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // Informações gerais sobre um assembly são controladas através do seguinte 
 // conjunto de atributos. Altere o valor destes atributos para modificar a informação
 // associada a um assembly.
 [assembly: AssemblyTitle("FTPLibrary")]
-[assembly: AssemblyDescription("Biblioteca para manipulação do protocolo FTP")]
+[assembly: AssemblyDescription("Componente para manipulação de arquivos em um servidor Ftp.")]
 #if DEBUG
 [assembly: AssemblyConfiguration("Debug")]
 #else
