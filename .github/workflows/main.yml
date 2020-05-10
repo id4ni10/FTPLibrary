@@ -35,6 +35,7 @@ jobs:
       run: msbuild FTPLibrary.sln /property:Configuration=Release
     
     - name: pack
+      run: nuget pack src/FTPLibrary.nuspec -symbols -symbolpackageformat snupkg
       run: nuget pack src/FTPLibrary.csproj -prop configuration=release -verbosity detailed -outputdirectory ${{ github.workspace }}\package -symbols -symbolpackageformat snupkg
 
     - uses: actions/upload-artifact@v1
@@ -45,4 +46,3 @@ jobs:
     - name: publish package
       run: |
         nuget push ${{ github.workspace }}\package\*.nupkg ${{ secrets.NUGET_API_KEY }} -source https://api.nuget.org/v3/index.json -skipduplicate
-      
