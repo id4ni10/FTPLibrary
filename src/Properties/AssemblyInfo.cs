@@ -8,31 +8,17 @@ using System.Runtime.InteropServices;
 // associada a um assembly.
 [assembly: AssemblyTitle("FTPLibrary")]
 [assembly: AssemblyDescription("Biblioteca para manipulação do protocolo FTP")]
-[assembly: AssemblyConfiguration("")]
+#if DEBUG
+[assembly: AssemblyConfiguration("Debug")]
+#else
+ [assembly: AssemblyConfiguration("Release")]
+#endif
 [assembly: AssemblyCompany("id4ni10")]
 [assembly: AssemblyProduct("FTPLibrary")]
-[assembly: AssemblyCopyright("Copyright ©  2015")]
-[assembly: AssemblyTrademark("")]
-[assembly: AssemblyCulture("")]
-
-// Definir ComVisible como false torna os tipos neste assembly não visíveis 
-// para componentes COM.  Caso precise acessar um tipo neste assembly a partir de 
-// COM, defina o atributo ComVisible como true nesse tipo.
+[assembly: AssemblyCopyright("Copyright © 2015")]
+[assembly: AssemblyTrademark("id4ni10")]
+[assembly: AssemblyCulture("pt-BR")]
 [assembly: ComVisible(false)]
-
-// O GUID a seguir é para o ID da typelib se este projeto for exposto para COM
 [assembly: Guid("1737c9b6-61a5-4021-8e0f-7e7f468debc8")]
-
-// Informações de Versão para um assembly consistem nos quatro valores a seguir:
-//
-//      Versão Principal
-//      Versão Secundária 
-//      Número da Versão
-//      Revisão
-//
-// É possível especificar todos os valores ou usar o padrão de Números de Compilação e Revisão 
-// utilizando o '*' como mostrado abaixo:
-// [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.0.0")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
+[assembly: AssemblyVersion("1.0.*")]
 [assembly: NeutralResourcesLanguage("pt-BR")]
