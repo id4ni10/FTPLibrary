@@ -36,7 +36,7 @@ jobs:
     
     - name: pack
       run: |
-        nuget pack src/FTPLibrary.csproj.nuspec -symbols -symbolpackageformat snupkg
+        nuget pack src/FTPLibrary.nuspec -symbols -symbolpackageformat snupkg
         nuget pack src/FTPLibrary.csproj -prop configuration=release -verbosity detailed -outputdirectory ${{ github.workspace }}\package -symbols -symbolpackageformat snupkg
 
     - uses: actions/upload-artifact@v1
