@@ -13,6 +13,7 @@
     <language>pt-BR</language>
     <releaseNotes>First release.</releaseNotes>
     <copyright>Copyright 2015</copyright>
+    <repository type="git" url="git://github.com/id4ni10/FTPLibrary" />
     <tags>FTP,Library</tags>
     <dependencies>
       <group targetFramework=".NETFramework4.8" />
