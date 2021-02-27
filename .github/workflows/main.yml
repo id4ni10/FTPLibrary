@@ -39,11 +39,11 @@ jobs:
         nuget pack src/FTPLibrary.nuspec -symbols -symbolpackageformat snupkg
         nuget pack src/FTPLibrary.csproj -prop configuration=release -verbosity detailed -outputdirectory ${{ github.workspace }}\package -symbols -symbolpackageformat snupkg
 
-    - uses: actions/upload-artifact@v1
+    - uses: actions/upload-artifact@v2
       with:
         name: nuget
         path: ${{ github.workspace }}\package
     
     - name: publish package
       run: |
-        nuget push ${{ github.workspace }}\package\*.nupkg -source https://api.nuget.org/v3/index.json -skipduplicate -apikey ${{ secrets.NUGET_API_KEY }}
+        nuget push ${{ github.workspace }}\package\*.nupkg -skipduplicate -apikey ${{ secrets.NUGET_API_KEY }}
