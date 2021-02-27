@@ -32,7 +32,7 @@ jobs:
         nuget-version: 'latest'
 
     - name: build
-      run: msbuild FTPLibrary.sln /property:Configuration=Release /p:IncludeSymbols=true /p:SymbolPackageFormat=snupkg
+      run: msbuild FTPLibrary.sln /property:Configuration=Release /t:pack /p:IncludeSymbols=true /p:SymbolPackageFormat=snupkg
     
     - name: pack
       run: |
