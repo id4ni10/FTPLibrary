@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30011.22
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FTPLibrary", "src/FTPLibrary.csproj", "{86BC94C5-9014-4FDA-B69E-96EEAB037F36}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FTPLibrary", "src\FTPLibrary.csproj", "{86BC94C5-9014-4FDA-B69E-96EEAB037F36}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FTPLibrary.Tests", "FTPLibrary.Tests\FTPLibrary.Tests.csproj", "{648E94A3-6055-4D09-9B18-151BF73CFC2E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,8 +17,15 @@ Global
 		{86BC94C5-9014-4FDA-B69E-96EEAB037F36}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{86BC94C5-9014-4FDA-B69E-96EEAB037F36}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{86BC94C5-9014-4FDA-B69E-96EEAB037F36}.Release|Any CPU.Build.0 = Release|Any CPU
+		{648E94A3-6055-4D09-9B18-151BF73CFC2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{648E94A3-6055-4D09-9B18-151BF73CFC2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{648E94A3-6055-4D09-9B18-151BF73CFC2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{648E94A3-6055-4D09-9B18-151BF73CFC2E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {682190FA-F663-4336-88BA-B881B20B3EDE}
 	EndGlobalSection
 EndGlobal

@@ -4,9 +4,7 @@ namespace FTPLibrary.Exceptions
 {
     public class FtpStreamOverflowException : FtpExeption
     {
-        public FtpStreamOverflowException(Exception ex)
-            : base(ex, string.Format("O comprimento máximo do Stream deverá ser de {0}!", int.MaxValue))
-        {
-        }
+        public FtpStreamOverflowException(Exception origin)
+            : base(origin, "O comprimento máximo do Stream excedeu o limite máximo!") => Console.WriteLine(this);
     }
 }

@@ -6,10 +6,6 @@ namespace FTPLibrary.Exceptions
     {
         public Exception Origin { get; private set; }
 
-        public FtpExeption(Exception origin, String message)
-            : base(message)
-        {
-            Origin = origin;
-        }
+        public FtpExeption(Exception origin, string message) : base(message) => Origin = origin;
     }
 }

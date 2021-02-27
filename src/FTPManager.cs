@@ -19,49 +19,24 @@ namespace FTPLibrary
 
         private Stream FtpStream { get; set; }
 
+        private (bool passive, bool binary, bool alive)? Settings { get; set; }
+
         /// <summary>
         /// Construtor do objeto Ftp.
         /// </summary>
         /// <param name="host">Nome do host</param>
         /// <param name="user">Nome do usuario</param>
         /// <param name="pass">Senha do usuario</param>
-        public Ftp(string host, string user, string pass)
+        public Ftp(string host, string user, string pass, (bool passive, bool binary, bool alive)? settings = null)
         {
             Host = host;
             UserCredentials = new NetworkCredential(user, pass);
+            Settings = settings;
         }
 
-        private Ftp() { }
+        public Ftp() { }
 
         ~Ftp() { this.Dispose(); }
-
-        private void SetupRequest(string path, string method, long offset = 0)
-        {
-            try
-            {
-                Uri uri;
-
-                var success = Uri.TryCreate(Host + (string.IsNullOrWhiteSpace(path) ? "" : path), UriKind.RelativeOrAbsolute, out uri);
-
-                if (!success)
-                    throw new UriFormatException(uri.AbsoluteUri);
-
-                Uri = uri;
-
-                Request = (FtpWebRequest)WebRequest.Create(uri);
-
-                if (offset > 0)
-                    Request.ContentOffset = offset;
-
-                Request.Method = method;
-
-                Request.Credentials = UserCredentials;
-            }
-            catch
-            {
-                throw;
-            }
-        }
 
         /// <summary>
         /// Cria um diretorio relativo ao host.
@@ -73,10 +48,6 @@ namespace FTPLibrary
             try
             {
                 SetupRequest(path, WebRequestMethods.Ftp.MakeDirectory);
-
-                Request.UsePassive = true;
-                Request.UseBinary = true;
-                Request.KeepAlive = false;
 
                 Response = (FtpWebResponse)Request.GetResponse();
 
@@ -112,7 +83,7 @@ namespace FTPLibrary
         /// <param name="offset">Marca de início (byte), para a leitura do arquivo no servidor.</param>
         /// <exception cref="FtpExeption"></exception>
         /// <returns>Retorna o arquivo desejado.</returns>
-        public byte[] DownloadFile(String filename, long offset = 0)
+        public byte[] DownloadFile(string filename, long offset = 0)
         {
             try
             {
@@ -147,36 +118,6 @@ namespace FTPLibrary
         }
 
         /// <summary>
-        /// Constroi um arquivo a partir de um stream.
-        /// </summary>
-        /// <param name="stream">Stream contendo o arquivo.</param>
-        /// <exception cref="FtpExeption"></exception>
-        /// <returns>Arquivo em um MemoryStream</returns>
-        private MemoryStream BuildFile(Stream stream)
-        {
-            try
-            {
-                var file = new MemoryStream();
-
-                var buffer = new byte[2048];
-
-                var readCount = stream.Read(buffer, 0, buffer.Length);
-
-                while (readCount > 0)
-                {
-                    file.Write(buffer, 0, readCount);
-                    readCount = stream.Read(buffer, 0, buffer.Length);
-                }
-
-                return file;
-            }
-            catch
-            {
-                throw;
-            }
-        }
-
-        /// <summary>
         /// Envia um arquivo
         /// </summary>
         /// <param name="path">Diretorio relativo ao Host. ex: /testes/files/file.txt, /arquivos/other.pdf</param>
@@ -188,8 +129,6 @@ namespace FTPLibrary
             try
             {
                 SetupRequest(path, WebRequestMethods.Ftp.UploadFile, offset);
-
-                Request.UseBinary = true;
 
                 Request.ContentLength = file.Length;
 
@@ -227,8 +166,6 @@ namespace FTPLibrary
             try
             {
                 SetupRequest(path, WebRequestMethods.Ftp.UploadFile, offset);
-
-                Request.UseBinary = true;
 
                 Request.ContentLength = stream.Length;
 
@@ -268,15 +205,11 @@ namespace FTPLibrary
         /// <param name="path">Diretorio relativo ao Host. ex: /testes/files/file.txt, /arquivos/other.pdf</param>
         /// <exception cref="FtpExeption"></exception>
         /// <returns>Retorna true para sucesso.</returns>
-        public bool DeleteFile(String path)
+        public bool DeleteFile(string path)
         {
             try
             {
                 SetupRequest(path, WebRequestMethods.Ftp.DeleteFile);
-
-                Request.UseBinary = true;
-                Request.UsePassive = true;
-                Request.KeepAlive = true;
 
                 Response = (FtpWebResponse)Request.GetResponse();
 
@@ -308,6 +241,12 @@ namespace FTPLibrary
             }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <exception cref="WebException"></exception>
+        /// <returns></returns>
         public long GetFileSize(string filename)
         {
             try
@@ -336,6 +275,78 @@ namespace FTPLibrary
             catch (Exception e)
             {
                 throw e;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="method"></param>
+        /// <param name="offset"></param>
+        /// <exception cref="Exception"></exception>
+        private void SetupRequest(string path, string method, long offset = 0)
+        {
+            try
+            {
+                Uri uri;
+
+                var success = Uri.TryCreate(Host + (string.IsNullOrWhiteSpace(path) ? "" : path), UriKind.RelativeOrAbsolute, out uri);
+
+                if (!success)
+                    throw new UriFormatException(uri.AbsoluteUri);
+
+                Uri = uri;
+
+                Request = (FtpWebRequest)WebRequest.Create(uri);
+
+                if (offset > 0)
+                    Request.ContentOffset = offset;
+
+                Request.Method = method;
+
+                Request.Credentials = UserCredentials;
+
+                if (Settings.HasValue)
+                {
+                    Request.UsePassive = Settings.Value.passive;
+                    Request.UseBinary = Settings.Value.binary;
+                    Request.KeepAlive = Settings.Value.alive;
+                }
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Constroi um arquivo a partir de um stream.
+        /// </summary>
+        /// <param name="stream">Stream contendo o arquivo.</param>
+        /// <exception cref="FtpExeption"></exception>
+        /// <returns>Arquivo em um MemoryStream</returns>
+        private MemoryStream BuildFile(Stream stream)
+        {
+            try
+            {
+                var file = new MemoryStream();
+
+                var buffer = new byte[2048];
+
+                var readCount = stream.Read(buffer, 0, buffer.Length);
+
+                while (readCount > 0)
+                {
+                    file.Write(buffer, 0, readCount);
+                    readCount = stream.Read(buffer, 0, buffer.Length);
+                }
+
+                return file;
+            }
+            catch (Exception ex)
+            {
+                throw new FTPBuildFileException(ex);
             }
         }
 
