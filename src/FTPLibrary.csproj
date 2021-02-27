@@ -39,7 +39,7 @@
     <ApplicationIcon>Assets\logo.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationManifest>nuget.config</ApplicationManifest>
   </PropertyGroup>
   <PropertyGroup>
     <IncludeSymbols>true</IncludeSymbols>
@@ -61,6 +61,7 @@
     <None Include="app.manifest" />
     <None Include="FTPLibrary.nuspec" />
     <None Include="LICENSE" />
+    <None Include="nuget.config" />
     <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
