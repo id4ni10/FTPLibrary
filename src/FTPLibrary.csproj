@@ -65,9 +65,9 @@
     <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\brand.png" />
-    <Content Include="Assets\logo.ico" />
-    <Content Include="Assets\logo.png" />
+    <Content Include="Assets\brand.png" Pack="false" />
+    <Content Include="Assets\logo.ico" Pack="false" />
+    <Content Include="Assets\logo.png" Pack="false" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
