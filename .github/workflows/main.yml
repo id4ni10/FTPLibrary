@@ -32,11 +32,11 @@ jobs:
         nuget-version: 'latest'
 
     - name: build
-      run: msbuild FTPLibrary.sln /property:Configuration=Release /p:IncludeSymbols=true /p:SymbolPackageFormat=snupkg -verbosity:diagnostic
+      run: msbuild FTPLibrary.sln /property:Configuration=Release /p:IncludeSymbols=true /p:SymbolPackageFormat=snupkg -verbosity:detailed
     
     - name: pack
       run: |
-        nuget pack src/FTPLibrary.nuspec -symbols -symbolpackageformat snupkg
+        #nuget pack src/FTPLibrary.nuspec -symbols -symbolpackageformat snupkg
         nuget pack src/FTPLibrary.csproj -prop configuration=release -verbosity detailed -outputdirectory ${{ github.workspace }}\package -symbols -symbolpackageformat snupkg
 
     - uses: actions/upload-artifact@v2
