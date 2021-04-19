@@ -8,7 +8,7 @@
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
     <licenseUrl>https://raw.githubusercontent.com/id4ni10/FTPLibrary/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/id4ni10/FTPLibrary</projectUrl>
-    <iconUrl>https://github.com/id4ni10/FTPLibrary/blob/master/src/Assets/brand.png</iconUrl>
+    <iconUrl>https://raw.githubusercontent.com/id4ni10/FTPLibrary/master/src/Assets/brand.png</iconUrl>
     <description>Componente para manipulação de arquivos em um servidor Ftp.</description>
     <language>pt-BR</language>
     <releaseNotes>First release.</releaseNotes>
