@@ -6,7 +6,7 @@
     <authors>id4ni10</authors>
     <owners>id4ni10</owners>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
-    <license type="file">LICENSE</license>
+    <licenseUrl>https://raw.githubusercontent.com/id4ni10/FTPLibrary/master/LICENSE</licenseUrl>
     <projectUrl>https://github.com/id4ni10/FTPLibrary</projectUrl>
     <iconUrl>https://github.com/id4ni10/FTPLibrary/blob/master/src/Assets/brand.png</iconUrl>
     <description>Componente para manipulação de arquivos em um servidor Ftp.</description>
@@ -14,8 +14,8 @@
     <releaseNotes>First release.</releaseNotes>
     <copyright>Copyright 2015</copyright>
     <repository type="git" ul="git://github.com/id4ni10/FTPLibrary" />
-    <readme>README.md</readme>
     <tags>FTP,Library</tags>
+    <readme>README.md</readme>
     <packageTypes>
       <packageType name="SymbolsPackage" />
     </packageTypes>
