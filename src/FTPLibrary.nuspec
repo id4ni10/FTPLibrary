@@ -15,7 +15,6 @@
     <copyright>Copyright 2015</copyright>
     <repository type="git" url="git://github.com/id4ni10/FTPLibrary" />
     <tags>FTP,Library</tags>
-    <readme>README.md</readme>
     <packageTypes>
       <packageType name="SymbolsPackage" />
     </packageTypes>
