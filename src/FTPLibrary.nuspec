@@ -15,9 +15,6 @@
     <copyright>Copyright 2015</copyright>
     <repository type="git" url="git://github.com/id4ni10/FTPLibrary" />
     <tags>FTP,Library</tags>
-    <packageTypes>
-      <packageType name="SymbolsPackage" />
-    </packageTypes>
     <dependencies>
       <group targetFramework=".NETFramework4.7.2" />
     </dependencies>
