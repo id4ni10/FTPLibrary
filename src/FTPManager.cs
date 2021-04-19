@@ -7,9 +7,9 @@ namespace FTPLibrary
 {
     public class Ftp : IDisposable
     {
-        public string Host { get; set; }
+        public Uri Target { get; private set; }
 
-        public Uri Uri { get; private set; }
+        public string Filename => Path.GetFileName(Target.AbsoluteUri);
 
         private FtpWebRequest Request { get; set; }
 
@@ -19,19 +19,35 @@ namespace FTPLibrary
 
         private Stream FtpStream { get; set; }
 
-        private (bool passive, bool binary, bool alive)? Settings { get; set; }
+        public (int port, bool passive, bool binary, bool alive) Settings { get; private set; }
 
         /// <summary>
         /// Construtor do objeto Ftp.
         /// </summary>
-        /// <param name="host">Nome do host</param>
+        /// <param name="host">Nome do host. Ex: 127.0.0.1, ftp.storage.documents, ftp://files.uploaded.io ...</param>
         /// <param name="user">Nome do usuario</param>
         /// <param name="pass">Senha do usuario</param>
-        public Ftp(string host, string user, string pass, (bool passive, bool binary, bool alive)? settings = null)
+        /// <param name="settings">port, passive, binary, alive</param>
+        public Ftp(string host, string user = null, string pass = null, int port = 21, bool passive = true, bool binary = true, bool alive = false)
         {
-            Host = host;
-            UserCredentials = new NetworkCredential(user, pass);
-            Settings = settings;
+            Uri uri;
+
+            var success =
+                Uri.TryCreate(host, UriKind.RelativeOrAbsolute, out uri) |
+                Uri.TryCreate($"{host}:{port}", UriKind.RelativeOrAbsolute, out uri) |
+                Uri.TryCreate($"ftp://{host}:{port}", UriKind.RelativeOrAbsolute, out uri);
+
+            if (success)
+            {
+                if (!uri.Scheme.Equals(Uri.UriSchemeFtp))
+                    throw new ArgumentException($"O protocolo ({uri.Scheme}) é inválido!");
+
+                Target = uri;
+                UserCredentials = new NetworkCredential(user, pass);
+                Settings = (uri.Port, passive, binary, alive);
+            }
+            else
+                throw new InvalidOperationException("Não foi possível inicializar o objeto. Verifique os parâmetros de entrada.");
         }
 
         public Ftp() { }
@@ -66,7 +82,7 @@ namespace FTPLibrary
                 if (Response.StatusCode == FtpStatusCode.ActionNotTakenFileUnavailable)
                     return true;
 
-                throw new FtpExeption(ex, "Erro ao criar diretório no caminho: " + Uri.AbsoluteUri);
+                throw new FtpExeption(ex, "Erro ao criar diretório no caminho: " + Target.AbsoluteUri);
             }
             catch (Exception e)
             {
@@ -109,7 +125,7 @@ namespace FTPLibrary
 
                 Response.Close();
 
-                throw new FtpExeption(ex, "Erro ao baixar arquivo no caminho: " + Uri.AbsoluteUri);
+                throw new FtpExeption(ex, "Erro ao baixar arquivo no caminho: " + Target.AbsoluteUri);
             }
             catch (Exception e)
             {
@@ -146,7 +162,7 @@ namespace FTPLibrary
 
                 Response.Close();
 
-                throw new FtpExeption(ex, "Erro ao enviar o arquivo no caminho: " + Uri.AbsoluteUri);
+                throw new FtpExeption(ex, "Erro ao enviar o arquivo no caminho: " + Target.AbsoluteUri);
             }
             catch (Exception e)
             {
@@ -187,7 +203,7 @@ namespace FTPLibrary
 
                 Response.Close();
 
-                throw new FtpExeption(ex, "Erro ao enviar o arquivo no caminho: " + Uri.AbsoluteUri);
+                throw new FtpExeption(ex, "Erro ao enviar o arquivo no caminho: " + Target.AbsoluteUri);
             }
             catch (OverflowException exp)
             {
@@ -233,7 +249,7 @@ namespace FTPLibrary
 
                 Response.Close();
 
-                throw new FtpExeption(ex, "Erro ao apagar o arquivo no caminho: " + Uri.AbsoluteUri);
+                throw new FtpExeption(ex, "Erro ao apagar o arquivo no caminho: " + Target.AbsoluteUri);
             }
             catch (Exception e)
             {
@@ -270,7 +286,7 @@ namespace FTPLibrary
                 if (Response.StatusCode == FtpStatusCode.ActionNotTakenFileUnavailable)
                     return 0;
 
-                throw new FtpExeption(ex, "Não foi possível encontrar o arquivo no caminho: " + Uri.AbsoluteUri);
+                throw new FtpExeption(ex, "Não foi possível encontrar o arquivo no caminho: " + Target.AbsoluteUri);
             }
             catch (Exception e)
             {
@@ -291,12 +307,12 @@ namespace FTPLibrary
             {
                 Uri uri;
 
-                var success = Uri.TryCreate(Host + (string.IsNullOrWhiteSpace(path) ? "" : path), UriKind.RelativeOrAbsolute, out uri);
+                var success = Uri.TryCreate(Target.Host + (string.IsNullOrWhiteSpace(path) ? "" : path), UriKind.RelativeOrAbsolute, out uri);
 
                 if (!success)
                     throw new UriFormatException(uri.AbsoluteUri);
 
-                Uri = uri;
+                Target = uri;
 
                 Request = (FtpWebRequest)WebRequest.Create(uri);
 
@@ -304,15 +320,10 @@ namespace FTPLibrary
                     Request.ContentOffset = offset;
 
                 Request.Method = method;
-
                 Request.Credentials = UserCredentials;
-
-                if (Settings.HasValue)
-                {
-                    Request.UsePassive = Settings.Value.passive;
-                    Request.UseBinary = Settings.Value.binary;
-                    Request.KeepAlive = Settings.Value.alive;
-                }
+                Request.UsePassive = Settings.passive;
+                Request.UseBinary = Settings.binary;
+                Request.KeepAlive = Settings.alive;
             }
             catch
             {
