@@ -38,7 +38,7 @@ namespace FTPLibrary
                     throw new ArgumentException($"O protocolo ({uri.Scheme}) é inválido!");
 
                 Target = uri;
-                UserCredentials = new NetworkCredential(user, pass, uri.Host);
+                UserCredentials = new NetworkCredential(user, pass);
                 Settings = (uri.Port, passive, binary, alive);
             }
             else
