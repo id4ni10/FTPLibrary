@@ -9,13 +9,11 @@ namespace FTPLibrary
     {
         public Uri Target { get; private set; }
 
-        public string Filename => Path.GetFileName(Target.AbsoluteUri);
+        public FtpWebRequest Request { get; private set; }
 
-        private FtpWebRequest Request { get; set; }
+        public FtpWebResponse Response { get; private set; }
 
-        private FtpWebResponse Response { get; set; }
-
-        private NetworkCredential UserCredentials { get; set; }
+        public NetworkCredential UserCredentials { get; private set; }
 
         private Stream FtpStream { get; set; }
 
@@ -24,18 +22,15 @@ namespace FTPLibrary
         /// <summary>
         /// Construtor do objeto Ftp.
         /// </summary>
-        /// <param name="host">Nome do host. Ex: 127.0.0.1, ftp.storage.documents, ftp://files.uploaded.io ...</param>
+        /// <param name="host">Nome do host. Ex: 127.0.0.1, ftp.storage.documents ...</param>
         /// <param name="user">Nome do usuario</param>
         /// <param name="pass">Senha do usuario</param>
         /// <param name="settings">port, passive, binary, alive</param>
         public Ftp(string host, string user = null, string pass = null, int port = 21, bool passive = true, bool binary = true, bool alive = false)
         {
-            Uri uri;
+            var entry = Dns.GetHostEntry(host);
 
-            var success =
-                Uri.TryCreate(host, UriKind.RelativeOrAbsolute, out uri) |
-                Uri.TryCreate($"{host}:{port}", UriKind.RelativeOrAbsolute, out uri) |
-                Uri.TryCreate($"ftp://{host}:{port}", UriKind.RelativeOrAbsolute, out uri);
+            var success = Uri.TryCreate($"ftp://{entry.HostName}:{port}", UriKind.RelativeOrAbsolute, out Uri uri);
 
             if (success)
             {
@@ -43,14 +38,14 @@ namespace FTPLibrary
                     throw new ArgumentException($"O protocolo ({uri.Scheme}) é inválido!");
 
                 Target = uri;
-                UserCredentials = new NetworkCredential(user, pass);
+                UserCredentials = new NetworkCredential(user, pass, uri.Host);
                 Settings = (uri.Port, passive, binary, alive);
             }
             else
                 throw new InvalidOperationException("Não foi possível inicializar o objeto. Verifique os parâmetros de entrada.");
         }
 
-        public Ftp() { }
+        private Ftp() { }
 
         ~Ftp() { this.Dispose(); }
 
@@ -258,11 +253,11 @@ namespace FTPLibrary
         }
 
         /// <summary>
-        /// 
+        /// Obtêm o tamanho do arquivo no servidor.
         /// </summary>
-        /// <param name="filename"></param>
+        /// <param name="filename">Caminho completo para o arquivo no servidor.</param>
         /// <exception cref="WebException"></exception>
-        /// <returns></returns>
+        /// <returns>Tamanho do arquivo.</returns>
         public long GetFileSize(string filename)
         {
             try
@@ -295,40 +290,28 @@ namespace FTPLibrary
         }
 
         /// <summary>
-        /// 
+        /// Monta a requisição.
         /// </summary>
-        /// <param name="path"></param>
-        /// <param name="method"></param>
-        /// <param name="offset"></param>
+        /// <param name="path">Caminho relativo para o arquivo</param>
+        /// <param name="method">Método FTP empregado na requisição.</param>
+        /// <param name="offset">Baixa o arquivo partindo do comprimento dos bytes indicado.</param>
         /// <exception cref="Exception"></exception>
         private void SetupRequest(string path, string method, long offset = 0)
         {
-            try
-            {
-                Uri uri;
+            var uri = new Uri(Target, path);
 
-                var success = Uri.TryCreate(Target.Host + (string.IsNullOrWhiteSpace(path) ? "" : path), UriKind.RelativeOrAbsolute, out uri);
+            Target = uri;
 
-                if (!success)
-                    throw new UriFormatException(uri.AbsoluteUri);
+            Request = (FtpWebRequest)WebRequest.Create(uri);
 
-                Target = uri;
+            if (offset > 0)
+                Request.ContentOffset = offset;
 
-                Request = (FtpWebRequest)WebRequest.Create(uri);
-
-                if (offset > 0)
-                    Request.ContentOffset = offset;
-
-                Request.Method = method;
-                Request.Credentials = UserCredentials;
-                Request.UsePassive = Settings.passive;
-                Request.UseBinary = Settings.binary;
-                Request.KeepAlive = Settings.alive;
-            }
-            catch
-            {
-                throw;
-            }
+            Request.Method = method;
+            Request.Credentials = UserCredentials;
+            Request.UsePassive = Settings.passive;
+            Request.UseBinary = Settings.binary;
+            Request.KeepAlive = Settings.alive;
         }
 
         /// <summary>
